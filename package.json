@@ -1,0 +1,19 @@
+{
+  "name": "orbital-pupp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "e": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  
+
+  "dependencies": {
+    "jest": "^28.1.1",
+    "jest-puppeteer": "^6.1.0",
+    "puppeteer": "^15.1.1"
+  }
+}
