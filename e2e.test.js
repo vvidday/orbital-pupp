@@ -105,7 +105,9 @@ describe("Main page", () => {
         await submitButton.click();
 
         // Wait for highscores to load
-        await page.waitForSelector("#hsentry0");
+        const hsButton = await page.waitForSelector("#hs-btn");
+        await hsButton.click();
+        await delay(1500);
         // Iterate through names and find entry corresponding to PuppeteerDefaultAnon
         const names = await page.$$("div[id*=name]");
         for (let i = 0; i < names.length; i++) {

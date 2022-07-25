@@ -7,30 +7,25 @@ const delay = (time) => {
     });
 };
 
-describe("Playing a custom group", () => {
+describe("Playing default group while logged in", () => {
     beforeAll(async () => {
+        require("dotenv").config();
         await page.goto("http://localhost:3000");
     });
-    it("Custom group has correct behaviour", async () => {
-        // Find and click on custom button
-        const customButton = await page.$("#custom-btn");
-        await customButton.click();
-
-        let input = await page.waitForSelector("#custom-input");
-        expect(input).toBeDefined();
-        let addButton = await page.$("#custom-add-btn");
-        // Add two accounts
-        await input.click();
-        await page.keyboard.type("xqc");
-        await addButton.click();
-        await delay(1000);
-        await input.click();
-        await page.keyboard.type("cristiano");
-        await addButton.click();
-        await delay(1000);
-        // Start game
-        let playButton = await page.$("#play-btn");
-        await playButton.click();
+    it("Default group has correct behaviour", async () => {
+        // Sign in
+        const signInButton = await page.$("#sign-in-btn");
+        await signInButton.click();
+        const usernameInput = await page.waitForSelector("#username_or_email");
+        usernameInput.focus();
+        await page.keyboard.type(process.env.USERNAME);
+        const passwordInput = await page.$("#password");
+        await passwordInput.focus();
+        await page.keyboard.type(process.env.PASSWORD);
+        const submitButton = await page.$("#allow");
+        await submitButton.click();
+        const defaultGroupBtn = await page.waitForSelector("#Default-group");
+        await defaultGroupBtn.click();
         // Wait for game to load
         let answerElement = await page.waitForSelector("#answer");
         // The element should render on the page
@@ -39,8 +34,8 @@ describe("Playing a custom group", () => {
         let answer = await answerElement.evaluate((e) => e.textContent);
         expect(answer).toBeDefined();
         /*
-            Test for correct choice
-        */
+              Test for correct choice
+          */
         let correctButton = null;
         // Select all choice buttons
         let buttons = await page.$$("button[id*=choice]");
@@ -69,8 +64,8 @@ describe("Playing a custom group", () => {
         await nextButton.click();
 
         /*
-            Test for wrong choice
-        */
+              Test for wrong choice
+          */
         answerElement = await page.waitForSelector("#answer");
         expect(answerElement).toBeDefined();
         answer = await answerElement.evaluate((e) => e.textContent);
@@ -92,30 +87,8 @@ describe("Playing a custom group", () => {
         expect(nextButton).toBeNull();
         // Click wrong button
         await wrongButton.click();
-
-        // Wait for submit score component to load
-        const submitinput = await page.waitForSelector("#submit-name-input");
-        // Focus on input and type
-        await page.focus("#submit-name-input");
-        await page.keyboard.type("PuppeteerDefaultAnon");
-        // Submit score
-        const submitButton = await page.$("#submit-name-btn");
-        await submitButton.click();
-
         // Wait for highscores to load
         const hsButton = await page.waitForSelector("#hs-btn");
-        await hsButton.click();
-        await delay(1500);
-        const names = await page.$$("div[id*=name]");
-        for (let i = 0; i < names.length; i++) {
-            const e = await names[i].evaluate((e) => e.textContent);
-            if (e.trim() === "PuppeteerDefaultAnon") {
-                // Check if score is 1
-                const scoreEle = await page.$(`#score${i}`);
-                const score = await scoreEle.evaluate((e) => e.textContent);
-                expect(score).toBe("1");
-                break;
-            }
-        }
+        expect(hsButton).toBeDefined();
     });
 });
